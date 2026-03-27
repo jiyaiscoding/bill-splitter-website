@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bill Splitter</title>
+
+<style>
+
+/* ===== BACKGROUND ===== */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #6a6ce0, #8c6be6);
+}
+
+/* ===== MAIN BOX ===== */
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #f1f1f1;
+    padding: 30px;
+    border-radius: 15px;
+}
+
+/* ===== TITLE ===== */
+h1 {
+    text-align: center;
+}
+
+/* ===== INPUT BAR ===== */
+.top {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.top input {
+    padding: 10px;
+    width: 220px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px 16px;
+    margin-left: 8px;
+    border: none;
+    border-radius: 8px;
+    background: #6a6ce0;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #5b5dd1;
+}
+
+/* ===== PEOPLE GRID ===== */
+.people {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+/* ===== PERSON CARD ===== */
+.card {
+    background: #d9d9d9;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.avatar {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.card input {
+    width: 90%;
+    padding: 8px;
+    margin: 6px 0;
+    border-radius: 8px;
+    border: 1px solid #aaa;
+}
+
+/* ===== CALCULATE BUTTON ===== */
+.calc {
+    text-align: center;
+    margin-top: 25px;
+}
+
+/* ===== RESULT BOX ===== */
+.result {
+    background: #dcdcdc;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 30px;
+    font-size: 16px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>💸Bill Splitter💸</h1>
+
+<div class="top">
+    <input id="count" type="number" min="1" placeholder="Enter number of people">
+    <button onclick="createPeople()">Create</button>
+</div>
+
+<div id="people" class="people"></div>
+
+<div class="calc">
+    <button onclick="calculate()">Calculate</button>
+</div>
+
+<div id="result" class="result"></div>
+
+</div>
+
+<script>
+
+// ===== CREATE PERSON INPUT CARDS =====
+function createPeople() {
+
+    const n = document.getElementById("count").value;
+    const container = document.getElementById("people");
+    container.innerHTML = "";
+
+    const avatars = ["👤","👩","👨","🧑","👩‍🦱","👨‍🦱","👩‍🦰","👨‍🦰"];
+
+    for (let i = 0; i < n; i++) {
+        container.innerHTML += `
+        <div class="card">
+            <div class="avatar">${avatars[i % avatars.length]}</div>
+            <input placeholder="Name" id="name${i}">
+            <input type="number" placeholder="Amount Paid ₹" id="amt${i}">
+        </div>`;
+    }
+}
+
+// ===== CALCULATE SETTLEMENT =====
+function calculate() {
+
+    const rows = document.getElementById("people").children;
+
+    if (rows.length === 0) {
+        alert("Create people first");
+        return;
+    }
+
+    let total = 0;
+    let data = [];
+
+    // Collect data
+    for (let i = 0; i < rows.length; i++) {
+
+        let name = document.getElementById(`name${i}`).value || `Person ${i+1}`;
+        let amt = parseFloat(document.getElementById(`amt${i}`).value) || 0;
+
+        total += amt;
+        data.push({name, amt});
+    }
+
+    const share = total / data.length;
+
+    // Separate creditors and debtors
+    let creditors = [];
+    let debtors = [];
+
+    data.forEach(p => {
+        let balance = p.amt - share;
+
+        if (balance > 0)
+            creditors.push({name: p.name, amount: balance});
+        else if (balance < 0)
+            debtors.push({name: p.name, amount: -balance});
+    });
+
+    // Settlement logic
+    let settlement = "";
+
+    let i = 0, j = 0;
+
+    while (i < debtors.length && j < creditors.length) {
+
+        let payAmount = Math.min(debtors[i].amount, creditors[j].amount);
+
+        settlement += `💸 ${debtors[i].name} pays ${creditors[j].name} ₹${payAmount.toFixed(2)}<br>`;
+
+        debtors[i].amount -= payAmount;
+        creditors[j].amount -= payAmount;
+
+        if (debtors[i].amount === 0) i++;
+        if (creditors[j].amount === 0) j++;
+    }
+
+    // Display result
+    document.getElementById("result").innerHTML = `
+        <b>Total Expense:</b> ₹${total.toFixed(2)}<br>
+        <b>Each Person Should Pay:</b> ₹${share.toFixed(2)}<br><br>
+        <b>Settlement:</b><br><br>
+        ${settlement}
+    `;
+}
+
+</script>
+
+</body>
+</html>
