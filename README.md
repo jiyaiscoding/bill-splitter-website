@@ -1,4 +1,4 @@
-# bill-splitter-website
+
 # 💸 Bill Splitter App
 By- Jiya Arora
     24BAI10034
