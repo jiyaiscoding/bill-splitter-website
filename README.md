@@ -1,53 +1,97 @@
 
-# 💸 Bill Splitter App
-By- Jiya Arora
-    24BAI10034
-    
-Problem Statement-A simple web application to split shared expenses fairly among a group of people.
+# Bill Splitter Web Application
+## Author-Jiya Arora
+## Registration Number-24BAI10034
 
-## 🚀 Features
+## Abstract
 
-* Enter number of participants
-* Add name and amount paid by each person
-* Calculates total expense
-* Computes equal share per person
-* Displays optimized settlement:
+Handling shared expenses during trips, meals, and activities can be complex and time-consuming. People may rely on manual calculations, which can be erroneous and involve unwanted transactions.
 
-  * Who pays whom
-  * Exact amount to transfer
+This project is based on the idea of designing a simple web-based application called Bill Splitter. It can be used to automatically calculate the expenses, shares, and settlements between people.
 
-## 🧠 How It Works
+## Problem Statement
 
-1. Calculates total expense
-2. Determines each person’s fair share
-3. Identifies creditors (who paid more)
-4. Identifies debtors (who paid less)
-5. Matches payments to minimize transactions
+When a group of people share expenses, several issues arise:
 
-## 🛠️ Technologies Used
+- Difficulty in tracking individual contributions
+- Confusion in splitting expenses evenly
+- Lack of clarity in identifying who owes whom
+- Increased number of transactions
+- High chances of manual calculation errors
 
-* HTML
-* CSS
-* JavaScript
+This project aims to solve these problems using a simple and logical approach.
 
-## ▶️ How to Run
+## Objectives
+- Design a simple and user-friendly interface
+- Collect input data (names and expenses)
+- Calculate total expenditure
+- Determine equal share per person
+- Identify:
+Creditors (paid more)
+Debtors (paid less)
+- Generate an optimized settlement plan
+- Reduce the number of transactions
 
-1. Download the project
-2. Open `index.html` in any web browser
-3. Enter data and calculate
+## Scope of the Project
 
-No installation required.
+This application can be used in real-life scenarios such as:
 
-## 📌 Use Case
+-  Group trips
+-  Roommates/hostel expenses
+-  Restaurant bill splitting
+-  Event or party cost sharing
+-  Office team expenses
 
-Useful for splitting expenses during:
+## Technologies Used
+JAVA-Logic desiging, backend
+HTML – Structure of the web page
+CSS – Styling and layout
+JavaScript – Logic and calculations (frontend)
 
-* Trips
-* Room sharing
-* Parties
-* Group purchases
-* Hostel expenses
+## Algorithm Used
 
----
+The project uses a Greedy Algorithm:
 
+- Calculate total expense
+- Compute equal share
+- Find balance for each person
+- Divide into:
+- Creditors
+- Debtors
+- Match debtor with creditor
+- Transfer minimum amount
+- Repeat until all balances become zero
+
+This minimizes the number of transactions.
+
+## Features
+- Simple and clean UI
+- Dynamic input generation
+- Accurate calculations
+- Clear settlement output
+- Optimized transaction handling
+- Works directly in browser
+- No installation required
+
+## How to Run the Project
+
+- Download or clone the repository
+- Open index.html in any browser
+- Enter number of people
+- Add names and expenses
+- Click Calculate
+
+## Project Structure
+Bill-Splitter/
+├── index.html
+├── BillSplitter.java
+└── README.md
+
+
+Developed as part of a BYOP (Bring Your Own Project) academic submission.
+
+## Conclusion
+
+This project successfully demonstrates how a real-world problem like expense sharing can be solved using simple logic and basic web technologies.
+It provides a clear, efficient, and user-friendly solution for managing group expenses and serves as a strong foundation for more advanced financial applications.
 ⭐ Developed as part of BYOP (Bring Your Own Project) for VITYARTHI course programming in JAVA.
