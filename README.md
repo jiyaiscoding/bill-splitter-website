@@ -83,9 +83,9 @@ This minimizes the number of transactions.
 
 ## Project Structure
 Bill-Splitter/
-├── index.html
-├── BillSplitter.java
-└── README.md
+-  index.html
+- BillSplitter.java
+-  README.md
 
 
 Developed as part of a BYOP (Bring Your Own Project) academic submission.
