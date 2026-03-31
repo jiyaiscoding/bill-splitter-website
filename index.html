@@ -98,6 +98,8 @@ button:hover {
     font-size: 16px;
 }
 
+<div id="graph" style="margin-top:20px;"></div>
+
 </style>
 </head>
 
@@ -124,14 +126,14 @@ button:hover {
 
 <script>
 
-// ===== CREATE PERSON INPUT CARDS =====
+// CREATE PEOPLE
 function createPeople() {
 
     const n = document.getElementById("count").value;
     const container = document.getElementById("people");
     container.innerHTML = "";
 
-    const avatars = ["👤","👩","👨","🧑","👩‍🦱","👨‍🦱","👩‍🦰","👨‍🦰"];
+    const avatars = ["👤","👩","👨","🧑","👩‍🦱","👨‍🦱"];
 
     for (let i = 0; i < n; i++) {
         container.innerHTML += `
@@ -143,7 +145,14 @@ function createPeople() {
     }
 }
 
-// ===== CALCULATE SETTLEMENT =====
+// RESET
+function resetAll() {
+    document.getElementById("people").innerHTML = "";
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("count").value = "";
+}
+
+// CALCULATE
 function calculate() {
 
     const rows = document.getElementById("people").children;
@@ -156,11 +165,15 @@ function calculate() {
     let total = 0;
     let data = [];
 
-    // Collect data
     for (let i = 0; i < rows.length; i++) {
 
-        let name = document.getElementById(`name${i}`).value || `Person ${i+1}`;
-        let amt = parseFloat(document.getElementById(`amt${i}`).value) || 0;
+        let name = document.getElementById(`name${i}`).value;
+        let amt = parseFloat(document.getElementById(`amt${i}`).value);
+
+        if (!name || isNaN(amt) || amt < 0) {
+            alert("Enter valid name and amount!");
+            return;
+        }
 
         total += amt;
         data.push({name, amt});
@@ -168,7 +181,6 @@ function calculate() {
 
     const share = total / data.length;
 
-    // Separate creditors and debtors
     let creditors = [];
     let debtors = [];
 
@@ -181,8 +193,24 @@ function calculate() {
             debtors.push({name: p.name, amount: -balance});
     });
 
-    // Settlement logic
-    let settlement = "";
+    let resultHTML = `
+        <b>Total Expense:</b> ₹${total.toFixed(2)}<br>
+        <b>Each Person Should Pay:</b> ₹${share.toFixed(2)}<br><br>
+        <b>${debtors.length} people need to pay, ${creditors.length} people will receive</b><br><br>
+    `;
+
+    // BALANCES
+    resultHTML += "<b>Balances:</b><br>";
+    data.forEach(p => {
+        let diff = p.amt - share;
+
+        if (diff > 0)
+            resultHTML += `<span style="color:green;">${p.name} gets ₹${diff.toFixed(2)}</span><br>`;
+        else if (diff < 0)
+            resultHTML += `<span style="color:red;">${p.name} owes ₹${(-diff).toFixed(2)}</span><br>`;
+    });
+
+    resultHTML += "<br><b>Settlement:</b><br>";
 
     let i = 0, j = 0;
 
@@ -190,7 +218,8 @@ function calculate() {
 
         let payAmount = Math.min(debtors[i].amount, creditors[j].amount);
 
-        settlement += `💸 ${debtors[i].name} pays ${creditors[j].name} ₹${payAmount.toFixed(2)}<br>`;
+        resultHTML += `<span style="color:red;">${debtors[i].name}</span> pays 
+                       <span style="color:green;">${creditors[j].name}</span> ₹${payAmount.toFixed(2)}<br>`;
 
         debtors[i].amount -= payAmount;
         creditors[j].amount -= payAmount;
@@ -199,13 +228,18 @@ function calculate() {
         if (creditors[j].amount === 0) j++;
     }
 
-    // Display result
-    document.getElementById("result").innerHTML = `
-        <b>Total Expense:</b> ₹${total.toFixed(2)}<br>
-        <b>Each Person Should Pay:</b> ₹${share.toFixed(2)}<br><br>
-        <b>Settlement:</b><br><br>
-        ${settlement}
-    `;
+    // 🔥 NEW FEATURE: FLOW VISUAL (NO UI BREAK)
+    resultHTML += "<br><b>Money Flow:</b><br>";
+
+    data.forEach(d => {
+        if (d.amt < share) {
+            creditors.forEach(c => {
+                resultHTML += `👤 ${d.name} ➡️ 💰 ${c.name}<br>`;
+            });
+        }
+    });
+
+    document.getElementById("result").innerHTML = resultHTML;
 }
 
 </script>

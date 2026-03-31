@@ -16,13 +16,6 @@ public class BillSplitter {
 
         Scanner sc = new Scanner(System.in);
 
-        System.out.print("Enter number of people: ");
-        int n = sc.nextInt();
-        sc.nextLine();
-
-        Person[] people = new Person[n];
-
-        // Input names
         for (int i = 0; i < n; i++) {
             System.out.print("Enter name " + (i + 1) + ": ");
             people[i] = new Person(sc.nextLine());
