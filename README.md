@@ -43,10 +43,10 @@ This application can be used in real-life scenarios such as:
 -  Office team expenses
 
 ## Technologies Used
-JAVA-Logic desiging, backend
-HTML – Structure of the web page
-CSS – Styling and layout
-JavaScript – Logic and calculations (frontend)
+- JAVA-Logic desiging, backend
+- HTML – Structure of the web page
+- CSS – Styling and layout
+- JavaScript – Logic and calculations (frontend)
 
 ## Algorithm Used
 
