@@ -2,246 +2,243 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Bill Splitter</title>
+<title>Bill Splitter | Smart Settlement</title>
 
 <style>
-
-/* ===== BACKGROUND ===== */
+/* ... (Previous styles for body, container, and cards stay the same) ... */
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(to right, #6a6ce0, #8c6be6);
+    min-height: 100vh;
 }
 
-/* ===== MAIN BOX ===== */
 .container {
     max-width: 900px;
     margin: 40px auto;
     background: #f1f1f1;
     padding: 30px;
     border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
-/* ===== TITLE ===== */
-h1 {
-    text-align: center;
-}
+h1 { text-align: center; color: #333; }
 
-/* ===== INPUT BAR ===== */
-.top {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.top input {
-    padding: 10px;
-    width: 220px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-}
+.top { text-align: center; margin-bottom: 25px; }
+.top input { padding: 10px; width: 220px; border-radius: 8px; border: 1px solid #ccc; outline: none; }
 
 button {
     padding: 10px 16px;
-    margin-left: 8px;
+    margin: 5px;
     border: none;
     border-radius: 8px;
     background: #6a6ce0;
     color: white;
     font-weight: bold;
     cursor: pointer;
+    transition: 0.3s;
 }
 
-button:hover {
-    background: #5b5dd1;
-}
+button:hover { background: #3335c5; }
+.reset-btn { background: #e74c3c; }
+.reset-btn:hover { background: #c0392b; }
 
-/* ===== PEOPLE GRID ===== */
 .people {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
 }
 
-/* ===== PERSON CARD ===== */
 .card {
-    background: #d9d9d9;
+    background: #ffffff;
     padding: 20px;
     border-radius: 15px;
     text-align: center;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
-.avatar {
-    font-size: 40px;
-    margin-bottom: 10px;
-}
+.avatar { font-size: 40px; margin-bottom: 10px; }
+.card input { width: 90%; padding: 8px; margin: 6px 0; border-radius: 8px; border: 1px solid #aaa; }
 
-.card input {
-    width: 90%;
-    padding: 8px;
-    margin: 6px 0;
-    border-radius: 8px;
-    border: 1px solid #aaa;
-}
+.calc { text-align: center; margin-top: 25px; }
 
-/* ===== CALCULATE BUTTON ===== */
-.calc {
-    text-align: center;
-    margin-top: 25px;
-}
-
-/* ===== RESULT BOX ===== */
+/* ===== COLOR CODING CLASSES ===== */
 .result {
-    background: #dcdcdc;
+    background: #fff;
     padding: 20px;
     border-radius: 12px;
     margin-top: 30px;
-    font-size: 16px;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    display: none;
+    border: 1px solid #ccc;
 }
 
+/* Red for those who need to pay */
+.debtor {
+    color: #d32f2f;
+    font-weight: bold;
+}
 
+/* Green for those who receive money */
+.creditor {
+    color: #2e7d32;
+    font-weight: bold;
+}
 
+.flow-item {
+    padding: 8px;
+    border-bottom: 1px dashed #ddd;
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
+    <h1>💸 Bill Splitter 💸</h1>
 
-<h1>💸Bill Splitter💸</h1>
+    <div class="top">
+        <input id="count" type="number" min="1" placeholder="How many people?">
+        <button onclick="createPeople()">Create</button>
+        <button class="reset-btn" onclick="resetAll()">Reset All</button>
+    </div>
 
-<div class="top">
-    <input id="count" type="number" min="1" placeholder="Enter number of people">
-    <button onclick="createPeople()">Create</button>
-</div>
+    <div id="people" class="people"></div>
 
-<div id="people" class="people"></div>
+    <div class="calc">
+        <button id="calcBtn" style="display:none;" onclick="calculate()">Calculate </button>
+    </div>
 
-<div class="calc">
-    <button onclick="calculate()">Calculate</button>
-</div>
-
-<div id="result" class="result"></div>
-
+    <div id="result" class="result"></div>
 </div>
 
 <script>
-
-// CREATE PEOPLE
 function createPeople() {
-
-    const n = document.getElementById("count").value;
+    const n = parseInt(document.getElementById("count").value);
     const container = document.getElementById("people");
-    container.innerHTML = "";
+    const resultBox = document.getElementById("result");
+    
+    if (isNaN(n) || n <= 0) {
+        alert("Please enter a valid number of people.");
+        return;
+    }
 
-    const avatars = ["👤","👩","👨","🧑","👩‍🦱","👨‍🦱"];
+    container.innerHTML = "";
+    resultBox.style.display = "none";
+    document.getElementById("calcBtn").style.display = "inline-block";
+
+    const avatars = ["👤","👩","👨","🧑","👩‍🦱","👨‍🦱","👩‍🦰","👨‍🦰"];
 
     for (let i = 0; i < n; i++) {
         container.innerHTML += `
         <div class="card">
             <div class="avatar">${avatars[i % avatars.length]}</div>
             <input placeholder="Name" id="name${i}">
-            <input type="number" placeholder="Amount Paid ₹" id="amt${i}">
+            <input type="number" min="0" placeholder="Amount Paid ₹" id="amt${i}">
         </div>`;
     }
 }
 
-// RESET
 function resetAll() {
+    document.getElementById("count").value = "";
     document.getElementById("people").innerHTML = "";
     document.getElementById("result").innerHTML = "";
-    document.getElementById("count").value = "";
+    document.getElementById("result").style.display = "none";
+    document.getElementById("calcBtn").style.display = "none";
 }
 
-// CALCULATE
+// ===== CALCULATE SETTLEMENT WITH VALIDATION =====
 function calculate() {
-
     const rows = document.getElementById("people").children;
-
+    
     if (rows.length === 0) {
-        alert("Create people first");
+        alert("Please create people first.");
         return;
     }
 
     let total = 0;
     let data = [];
+    let hasNegativeValue = false;
 
+    // 1. Data Collection & Negative Value Check
     for (let i = 0; i < rows.length; i++) {
+        let nameInput = document.getElementById(`name${i}`);
+        let amtInput = document.getElementById(`amt${i}`);
+        
+        let name = nameInput.value || `Person ${i+1}`;
+        let amt = parseFloat(amtInput.value);
 
-        let name = document.getElementById(`name${i}`).value;
-        let amt = parseFloat(document.getElementById(`amt${i}`).value);
-
-        if (!name || isNaN(amt) || amt < 0) {
-            alert("Enter valid name and amount!");
-            return;
+        // ERROR HANDLING: Check for negative values
+        if (amt < 0) {
+            amtInput.style.border = "2px solid red"; // Visual cue
+            hasNegativeValue = true;
+        } else {
+            amtInput.style.border = "1px solid #aaa"; // Reset border if fixed
         }
 
+        // Treat empty as 0, but valid
+        if (isNaN(amt)) amt = 0;
+
         total += amt;
-        data.push({name, amt});
+        data.push({ name, amt });
     }
 
-    const share = total / data.length;
+    // 2. Throw Error if Negative Found
+    if (hasNegativeValue) {
+        alert("❌ Error: Amounts cannot be negative. Please check the highlighted fields.");
+        return; // Stop execution
+    }
 
+    // 3. Safety Check for Zero Total
+    if (total === 0) {
+        alert("Total expense is ₹0. Nothing to split!");
+        return;
+    }
+
+    // --- Rest of your settlement logic ---
+    const share = total / data.length;
     let creditors = [];
     let debtors = [];
 
     data.forEach(p => {
         let balance = p.amt - share;
-
-        if (balance > 0)
-            creditors.push({name: p.name, amount: balance});
-        else if (balance < 0)
-            debtors.push({name: p.name, amount: -balance});
+        if (balance > 0.01) creditors.push({name: p.name, amount: balance});
+        else if (balance < -0.01) debtors.push({name: p.name, amount: -balance});
     });
 
-    let resultHTML = `
-        <b>Total Expense:</b> ₹${total.toFixed(2)}<br>
-        <b>Each Person Should Pay:</b> ₹${share.toFixed(2)}<br><br>
-        <b>${debtors.length} people need to pay, ${creditors.length} people will receive</b><br><br>
-    `;
-
-    // BALANCES
-    resultHTML += "<b>Balances:</b><br>";
-    data.forEach(p => {
-        let diff = p.amt - share;
-
-        if (diff > 0)
-            resultHTML += `<span style="color:green;">${p.name} gets ₹${diff.toFixed(2)}</span><br>`;
-        else if (diff < 0)
-            resultHTML += `<span style="color:red;">${p.name} owes ₹${(-diff).toFixed(2)}</span><br>`;
-    });
-
-    resultHTML += "<br><b>Settlement:</b><br>";
-
+    let settlementHTML = "";
     let i = 0, j = 0;
 
     while (i < debtors.length && j < creditors.length) {
-
         let payAmount = Math.min(debtors[i].amount, creditors[j].amount);
 
-        resultHTML += `<span style="color:red;">${debtors[i].name}</span> pays 
-                       <span style="color:green;">${creditors[j].name}</span> ₹${payAmount.toFixed(2)}<br>`;
+        settlementHTML += `
+            <div class="flow-item">
+                💸 <span class="debtor">${debtors[i].name}</span> 
+                pays 
+                <span class="creditor">${creditors[j].name}</span>: 
+                <b>₹${payAmount.toFixed(2)}</b>
+            </div>`;
 
         debtors[i].amount -= payAmount;
         creditors[j].amount -= payAmount;
 
-        if (debtors[i].amount === 0) i++;
-        if (creditors[j].amount === 0) j++;
+        if (debtors[i].amount <= 0.01) i++;
+        if (creditors[j].amount <= 0.01) j++;
     }
 
-    // 🔥 NEW FEATURE: FLOW VISUAL (NO UI BREAK)
-    resultHTML += "<br><b>Money Flow:</b><br>";
-
-    data.forEach(d => {
-        if (d.amt < share) {
-            creditors.forEach(c => {
-                resultHTML += `👤 ${d.name} ➡️ 💰 ${c.name}<br>`;
-            });
-        }
-    });
-
-    document.getElementById("result").innerHTML = resultHTML;
+    const resultDiv = document.getElementById("result");
+    resultDiv.style.display = "block";
+    resultDiv.innerHTML = `
+        <div style="border-bottom: 2px solid #6a6ce0; padding-bottom: 10px; margin-bottom: 15px; text-align:center;">
+            <b>Total Bill:</b> ₹${total.toFixed(2)} | <b>Split:</b> ₹${share.toFixed(2)} / person
+        </div>
+        <h3 style="text-align:center; margin-top:0;">Payment Flow</h3>
+        ${settlementHTML || "<strong>Everyone is even!</strong>"}
+    `;
 }
-
 </script>
 
 </body>

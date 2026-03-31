@@ -3,73 +3,106 @@ import java.util.*;
 class Person {
     String name;
     double paid;
+    double balance; // New: tracking net balance
 
     Person(String name) {
         this.name = name;
         this.paid = 0;
+        this.balance = 0;
     }
 }
 
 public class BillSplitter {
-
     public static void main(String[] args) {
-
         Scanner sc = new Scanner(System.in);
 
         System.out.print("Enter number of people: ");
-        int n = sc.nextInt();
-        sc.nextLine();
+        int n = 0;
+        try {
+            n = Integer.parseInt(sc.nextLine());
+        } catch (Exception e) {
+            System.out.println("Invalid input. Exiting.");
+            return;
+        }
 
         Person[] people = new Person[n];
 
-        // Input names
         for (int i = 0; i < n; i++) {
-            System.out.print("Enter name " + (i + 1) + ": ");
+            System.out.print("Enter name for person " + (i + 1) + ": ");
             people[i] = new Person(sc.nextLine());
         }
 
-        // Input expenses
+        // Expense Input Loop
         while (true) {
-            System.out.print("Enter payer name (or 'done' to finish): ");
-            String payer = sc.nextLine();
+            System.out.print("\nEnter payer name (or 'done' to finish): ");
+            String payerName = sc.nextLine();
 
-            if (payer.equalsIgnoreCase("done"))
-                break;
+            if (payerName.equalsIgnoreCase("done")) break;
 
-            System.out.print("Enter amount: ");
-            double amount = sc.nextDouble();
-            sc.nextLine();
-
+            // Validate if person exists
+            Person payer = null;
             for (Person p : people) {
-                if (p.name.equalsIgnoreCase(payer)) {
-                    p.paid += amount;
+                if (p.name.equalsIgnoreCase(payerName)) {
+                    payer = p;
                     break;
                 }
             }
+
+            if (payer == null) {
+                System.out.println("Name not found in the group!");
+                continue;
+            }
+
+            System.out.print("Enter amount paid by " + payer.name + ": ₹");
+            try {
+                double amount = Double.parseDouble(sc.nextLine());
+                if (amount < 0) throw new Exception();
+                payer.paid += amount;
+            } catch (Exception e) {
+                System.out.println("Invalid amount. Try again.");
+            }
         }
 
-        // Calculate total
+        // Calculation Logic
         double total = 0;
-        for (Person p : people) {
-            total += p.paid;
-        }
-
+        for (Person p : people) total += p.paid;
         double share = total / n;
 
-        System.out.println("\nTotal expense: ₹" + total);
-        System.out.println("Each person should pay: ₹" + share);
+        System.out.println("\n--- Summary ---");
+        System.out.printf("Total Expense: ₹%.2f\n", total);
+        System.out.printf("Individual Share: ₹%.2f\n", share);
+        System.out.println("----------------\n");
 
-        System.out.println("\nFinal Settlement:");
+        // Separate into Debtors and Creditors
+        List<Person> debtors = new ArrayList<>();
+        List<Person> creditors = new ArrayList<>();
 
         for (Person p : people) {
-            double balance = p.paid - share;
+            p.balance = p.paid - share;
+            if (p.balance < -0.01) debtors.add(p);
+            else if (p.balance > 0.01) creditors.add(p);
+        }
 
-            if (balance > 0)
-                System.out.println(p.name + " should receive ₹" + balance);
-            else if (balance < 0)
-                System.out.println(p.name + " should pay ₹" + (-balance));
-            else
-                System.out.println(p.name + " is settled.");
+        // Settlement Algorithm (Matching your JS logic)
+        System.out.println("Final Settlement Plan:");
+        int d = 0, c = 0;
+        while (d < debtors.size() && c < creditors.size()) {
+            Person debtor = debtors.get(d);
+            Person creditor = creditors.get(c);
+
+            double payAmount = Math.min(-debtor.balance, creditor.balance);
+
+            System.out.printf("💸 %s pays %s: ₹%.2f\n", debtor.name, creditor.name, payAmount);
+
+            debtor.balance += payAmount;
+            creditor.balance -= payAmount;
+
+            if (Math.abs(debtor.balance) < 0.01) d++;
+            if (Math.abs(creditor.balance) < 0.01) c++;
+        }
+
+        if (total > 0 && debtors.isEmpty() && creditors.isEmpty()) {
+            System.out.println("Everyone is perfectly settled!");
         }
 
         sc.close();
