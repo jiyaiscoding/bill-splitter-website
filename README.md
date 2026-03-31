@@ -1,7 +1,9 @@
 # bill-splitter-website
 # 💸 Bill Splitter App
-
-A simple web application to split shared expenses fairly among a group of people.
+By- Jiya Arora
+    24BAI10034
+    
+Problem Statement-A simple web application to split shared expenses fairly among a group of people.
 
 ## 🚀 Features
 
@@ -48,4 +50,4 @@ Useful for splitting expenses during:
 
 ---
 
-⭐ Developed as part of BYOP (Bring Your Own Project)
+⭐ Developed as part of BYOP (Bring Your Own Project) for VITYARTHI course programming in JAVA.
