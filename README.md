@@ -56,8 +56,8 @@ The project uses a Greedy Algorithm:
 - Compute equal share
 - Find balance for each person
 - Divide into:
-- Creditors
-- Debtors
+  Creditors
+  Debtors
 - Match debtor with creditor
 - Transfer minimum amount
 - Repeat until all balances become zero
